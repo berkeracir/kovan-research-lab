@@ -10,7 +10,7 @@ the words of a synset (wnid) :
 
 <details>
 	<summary>tool (n04451818)</summary>
-           
+        <p>
 * abrader, abradant (n02668393)
 	* abrading stone (n02668613)
 	* steel-wool pad (n04312020)
@@ -386,5 +386,5 @@ the words of a synset (wnid) :
 	* stemmer (n04313986)
 * tap (n04391158)
 * upset, swage (n04515444)
-
+        </p>
 </details>
