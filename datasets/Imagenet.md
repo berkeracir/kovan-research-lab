@@ -386,5 +386,5 @@ the words of a synset (wnid) :
 	* stemmer (n04313986)
 * tap (n04391158)
 * upset, swage (n04515444)
-		</p>
+
 </details>
