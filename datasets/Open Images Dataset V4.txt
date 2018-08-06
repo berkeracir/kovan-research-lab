@@ -1,0 +1,45 @@
+Tool
+	Container
+		Tin can
+		Barrel
+		Bottle
+		Picnic basket
+		Jug
+		Waste container
+		Beaker
+		Flowerpot
+	Ladder
+	Toothbrush
+	Screwdriver
+	Drill
+	Chainsaw
+	Wrench
+	Flashlight
+	Scissors
+	Ratchet
+	Kitchen utensil
+		Chopsticks
+		Ladle
+		Spatula
+		Can opener
+		Cutting board
+		Whisk
+		Drinking straw
+		Knife
+		Bottle opener
+		Measuring cup
+		Pizza cutter
+		Spoon
+		Fork
+	Hammer
+	Scale
+	Snowplow
+	Nail
+	Tripod
+	Torch
+	Chisel
+	Axe
+	Camera
+	Grinder
+	Ruler
+	Binoculars
