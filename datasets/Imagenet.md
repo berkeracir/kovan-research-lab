@@ -8,7 +8,7 @@ tool image dataset: http://image-net.org/explore?wnid=n04451818<br>
 <br>
 the words of a synset (wnid) :<br>
 <br>
-tool (n04451818)<br><br>
+tool (n04451818)<br>
 	abrader, abradant (n02668393)<br>
 		abrading stone (n02668613)<br>
 		steel-wool pad (n04312020)<br>
