@@ -17,8 +17,11 @@ from object_detection.utils import visualization_utils as vis_util
 
 CWD_PATH = "/".join(os.path.realpath(__file__).split('/')[:-1])
 
-MODEL_NAME = "faster_rcnn_inception_resnet_v2_atrous_oid_2018_01_28"
+#faster_rcnn_inception_resnet_v2_atrous_lowproposals_oid_2018_01_28
+#faster_rcnn_inception_resnet_v2_atrous_oid_2018_01_28
+MODEL_NAME = "faster_rcnn_inception_resnet_v2_atrous_lowproposals_oid_2018_01_28"
 PATH_TO_CKPT = os.path.join(CWD_PATH, "models", MODEL_NAME, "frozen_inference_graph.pb")
+#PATH_TO_CKPT = os.path.join(CWD_PATH, "models", MODEL_NAME, "saved_model", "saved_model.pb")
 PATH_TO_LABELS = os.path.join(CWD_PATH, "data", "oid_bbox_trainable_label_map.pbtxt")
 
 NUM_CLASSES = 546
@@ -92,8 +95,8 @@ def detect_objects(image_np, sess, detection_graph):
 	return image_np
 
 # First test on images
-PATH_TO_IMAGES_DIR = 'input_images'
-PATH_TO_OUTPUT_DIR = 'output_images'
+PATH_TO_IMAGES_DIR = os.path.join(CWD_PATH, "input_images")
+PATH_TO_OUTPUT_DIR = os.path.join(CWD_PATH, "tf_output_images", MODEL_NAME)
 if os.path.isdir(PATH_TO_OUTPUT_DIR):
 	shutil.rmtree(PATH_TO_OUTPUT_DIR)
 os.mkdir(PATH_TO_OUTPUT_DIR)
@@ -102,9 +105,10 @@ IMAGE_PATHS = []
 for (dirpath, dirnames, filenames) in os.walk(os.path.join(CWD_PATH, PATH_TO_IMAGES_DIR)):
 	IMAGE_PATHS.extend(filenames)
 	break
-
+	
+"""
 # Size, in inches, of the output images.
-IMAGE_SIZE = (12, 8)
+IMAGE_SIZE = (12, 8)"""
 
 def load_image_into_numpy_array(image):
 	(im_width, im_height) = image.size
