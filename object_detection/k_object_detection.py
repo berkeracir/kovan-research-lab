@@ -1,5 +1,7 @@
 import os
+import shutil
 import numpy as np
+from PIL import Image
 from keras.preprocessing import image
 from keras.applications.resnet50 import ResNet50, preprocess_input, decode_predictions
 
@@ -33,17 +35,18 @@ def predict(model, img, target_size, top_n=3):
 CWD_PATH = "/".join(os.path.realpath(__file__).split('/')[:-1])
 
 PATH_TO_IMAGES_DIR = os.path.join(CWD_PATH, "input_images")
-PATH_TO_OUTPUT_DIR = os.path.join(CWD_PATH, "k_output_images", model_weights)
+PATH_TO_OUTPUT_DIR = os.path.join(CWD_PATH, "output_images", model_weights)
 if os.path.isdir(PATH_TO_OUTPUT_DIR):
 	shutil.rmtree(PATH_TO_OUTPUT_DIR)
 os.mkdir(PATH_TO_OUTPUT_DIR)
 
 IMAGE_PATHS = []
-for (dirpath, dirnames, filenames) in os.walk(os.path.join(CWD_PATH, PATH_TO_IMAGES_DIR)):
+for (dirpath, dirnames, filenames) in os.walk(PATH_TO_IMAGES_DIR):
 	IMAGE_PATHS.extend(filenames)
 	break
 
 for image_path in IMAGE_PATHS:
-	img = Image.open(image_path)
+	img = Image.open(os.path.join(PATH_TO_IMAGES_DIR, image_path))
 	predictions = predict(model, img, target_size)
-	print predictions
+	print image_path.split("/")[-1], predictions
+	# TODO: implement better output format such as bounding boxes etc.
