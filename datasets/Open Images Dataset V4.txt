@@ -1,5 +1,5 @@
-Tool
-	Container
+Tool!
+	Container!
 		Tin can
 		Barrel
 		Bottle
@@ -17,7 +17,7 @@ Tool
 	Flashlight
 	Scissors
 	Ratchet
-	Kitchen utensil
+	Kitchen utensil!
 		Chopsticks
 		Ladle
 		Spatula
