@@ -4,9 +4,10 @@ import cv2
 import time
 import shutil
 import argparse
-import multiprocessing
 import numpy as np
 import tensorflow as tf
+import multiprocessing
+from natsort import natsorted
 #from matplotlib import pyplot as plt
 
 #sys.path.insert(0, "/home/berker/tensorflow/models/research")
@@ -32,7 +33,7 @@ categories = label_map_util.convert_label_map_to_categories(label_map, max_num_c
 category_index = label_map_util.create_category_index(categories)
 
 	
-def detect_objects(image_np, sess, detection_graph):
+def detect_objects(image_np, sess, detection_graph, fp):
 	# Expand dimensions since the model expects images to have shape: [1, None, None, 3]
 	image_np_expanded = np.expand_dims(image_np, axis=0)
 	image_tensor = detection_graph.get_tensor_by_name('image_tensor:0')
@@ -56,11 +57,13 @@ def detect_objects(image_np, sess, detection_graph):
 	print "classes:", classes
 	print "num_detections:", num_detections, num_detections[0], "\n" """
 
+	top_n = 3
 	threshold = 0.1
 	for index, value in enumerate(classes[0]):
-		if index >= num_detections[0]:
+		if index >= min(top_n, num_detections[0]):
 			break
-		print (category_index.get(value)).get('name').encode('utf8'), scores[0, index]
+		print "\t", (category_index.get(value)).get('name').encode('utf8'), scores[0, index]
+		fp.write('\t{} {}\n'.format((category_index.get(value)).get('name').encode('utf8'), scores[0, index]))
 	print "\n"
 	# TODO: implement better printing method
 
@@ -101,10 +104,11 @@ PATH_TO_OUTPUT_DIR = os.path.join(CWD_PATH, "output_images", MODEL_NAME)
 if os.path.isdir(PATH_TO_OUTPUT_DIR):
 	shutil.rmtree(PATH_TO_OUTPUT_DIR)
 os.mkdir(PATH_TO_OUTPUT_DIR)
+PATH_TO_OUTPUT = os.path.join(CWD_PATH, "output")
 
 IMAGE_PATHS = []
 for (dirpath, dirnames, filenames) in os.walk(PATH_TO_IMAGES_DIR):
-	IMAGE_PATHS.extend(filenames)
+	IMAGE_PATHS.extend(natsorted(filenames))
 	break
 	
 """
@@ -134,9 +138,13 @@ with detection_graph.as_default():
 
 with detection_graph.as_default():
 	with tf.Session(graph=detection_graph) as sess:
-		for image_path in IMAGE_PATHS:
-			image = Image.open(os.path.join(PATH_TO_IMAGES_DIR, image_path))
-			image_np = load_image_into_numpy_array(image)
-			image_process = detect_objects(image_np, sess, detection_graph)
-			image_process = Image.fromarray(image_process, "RGB")
-			image_process.save(os.path.join(PATH_TO_OUTPUT_DIR, image_path))
+		with open(os.path.join(PATH_TO_OUTPUT, MODEL_NAME + ".txt"), 'w') as fp:
+			for image_path in IMAGE_PATHS:
+				image = Image.open(os.path.join(PATH_TO_IMAGES_DIR, image_path))
+				image_np = load_image_into_numpy_array(image)
+				print image_path.split("/")[-1] + ":"
+				fp.write(image_path.split("/")[-1] + ":\n")
+				image_process = detect_objects(image_np, sess, detection_graph, fp)
+				fp.write("\n")
+				image_process = Image.fromarray(image_process, "RGB")
+				image_process.save(os.path.join(PATH_TO_OUTPUT_DIR, image_path))
