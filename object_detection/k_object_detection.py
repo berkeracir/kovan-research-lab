@@ -109,21 +109,31 @@ with open(os.path.join(PATH_TO_OUTPUT, model_name + ".txt"), 'w') as fp:
 
 		y_pred_thresh = [y_pred[k][y_pred[k,:,1] > confidence_threshold] for k in range(y_pred.shape[0])]
 		print(image_path.split("/")[-1] + ":")
-		print(y_pred_thresh[0])
-		print("\n")
 		fp.write(image_path.split("/")[-1] + ":\n")
-		fp.write("\t")
-		fp.write(y_pred_thresh[0])
-		fp.write("\n")
 
 		colors = plt.cm.hsv(np.linspace(0, 1, 201)).tolist()
 		# TODO: implement class names
-		classes = ['background',
-				'aeroplane', 'bicycle', 'bird', 'boat',
-				'bottle', 'bus', 'car', 'cat',
-				'chair', 'cow', 'diningtable', 'dog',
-				'horse', 'motorbike', 'person', 'pottedplant',
-				'sheep', 'sofa', 'train', 'tvmonitor']
+		classes = [ 'background', 
+					"accordion", "airplane", "ant", "antelope", "apple", "armadillo", "artichoke", "axe", "baby bed", "backpack", 
+					"bagel", "balance beam", "banana", "band aid", "banjo", "baseball", "basketball", "bathing cap", "beaker", 
+					"bear", "bee", "bell pepper", "bench", "bicycle", "binder", "bird", "bookshelf", "bow", 
+					"bow tie", "bowl", "brassiere", "burrito", "bus", "butterfly", "camel", "can opener", "car", "cart", 
+					"cattle", "cello", "centipede", "chain saw", "chair", "chime", "cocktail shaker", "coffee maker", "computer keyboard", 
+					"computer mouse", "corkscrew", "cream", "croquet ball", "crutch", "cucumber", "cup or mug", "diaper", "digital clock", "dishwasher", 
+					"dog", "domestic cat", "dragonfly", "drum", "dumbbell", "electric fan", "elephant", "face powder", "fig", "filing cabinet", 
+					"flower pot", "flute", "fox", "french horn", "frog", "frying pan", "giant panda", "goldfish", "golf ball", "golfcart", 
+					"guacamole", "guitar", "hair dryer", "hair spray", "hamburger", "hammer", "hamster", "harmonica", "harp", "hat with a wide brim", 
+					"head cabbage", "helmet", "hippopotamus", "horizontal bar", "horse", "hotdog", "iPod", "isopod", "jellyfish", "koala bear", "ladle", 
+					"ladybug", "lamp", "laptop", "lemon", "lion", "lipstick", "lizard", "lobster", "maillot", "maraca", "microphone", "microwave", "milk can", 
+					"miniskirt", "monkey", "motorcycle", "mushroom", "nail", "neck brace", "oboe", "orange", "otter", "pencil box", 
+					"pencil sharpener", "perfume", "person", "piano", "pineapple", "ping-pong ball", "pitcher", "pizza", "plastic bag", 
+					"plate rack", "pomegranate", "popsicle", "porcupine", "power drill", "pretzel", "printer", "puck", "punching bag", "purse", 
+					"rabbit", "racket", "ray", "red panda", "refrigerator", "remote control", "rubber eraser", "rugby ball", "ruler", "salt or pepper shaker", 
+					"saxophone", "scorpion", "screwdriver", "seal", "sheep", "ski", "skunk", "snail", "snake", "snowmobile", 
+					"snowplow", "soap dispenser", "soccer ball", "sofa", "spatula", "squirrel", "starfish", "stethoscope", "stove", "strainer", 
+					"strawberry", "stretcher", "sunglasses", "swimming trunks", "swine", "syringe", "table", "tape player", "tennis ball", "tick", 
+					"tie", "tiger", "toaster", "traffic light", "train", "trombone", "trumpet", "turtle", "tv or monitor", "unicycle", 
+					"vacuum", "violin", "volleyball", "waffle iron", "washer", "water bottle", "watercraft", "whale", "wine bottle", "zebra"]
 
 		#plt.figure(figsize=(20,12))
 		plt.imshow(imread(os.path.join(PATH_TO_IMAGES_DIR, image_path)))
@@ -138,10 +148,14 @@ with open(os.path.join(PATH_TO_OUTPUT, model_name + ".txt"), 'w') as fp:
 			xmax = box[4] * orig_image.shape[1] / img_width
 			ymax = box[5] * orig_image.shape[0] / img_height
 			color = colors[int(box[0])]
-			#label = '{}: {:.2f}'.format(classes[int(box[0])], box[1])
-			label = '{}: {:.2f}'.format(int(box[0]), box[1])
+			label = '{}: {:.2f}'.format(classes[int(box[0])], box[1])
+			#label = '{}: {:.2f}'.format(int(box[0]), box[1])
 			current_axis.add_patch(plt.Rectangle((xmin, ymin), xmax-xmin, ymax-ymin, color=color, fill=False, linewidth=2))  
 			current_axis.text(xmin, ymin, label, size='x-large', color='white', bbox={'facecolor':color, 'alpha':1.0})
+			print("\t{} {}".format(classes[int(box[0])], box[1]))
+			fp.write("\t{} {}\n".format(classes[int(box[0])], box[1]))
+		print("\n")
+		fp.write("\n")
 
 		plt.savefig(os.path.join(PATH_TO_OUTPUT_DIR, image_path.split("/")[-1]))
 		plt.close()
