@@ -50,7 +50,7 @@ for (dirpath, dirnames, filenames) in os.walk(PATH_TO_IMAGES_DIR):
 
 with open(os.path.join(PATH_TO_OUTPUT, model_name + ".txt"), 'w') as fp:
 	for image_path in IMAGE_PATHS:
-		detections = detector.detectObjectsFromImage(input_image=os.path.join(PATH_TO_IMAGES_DIR, image_path), output_image_path=os.path.join(PATH_TO_OUTPUT_DIR, image_path), minimum_percentage_probability=75)
+		detections = detector.detectObjectsFromImage(input_image=os.path.join(PATH_TO_IMAGES_DIR, image_path), output_image_path=os.path.join(PATH_TO_OUTPUT_DIR, image_path), minimum_percentage_probability=50)
 
 		pred_str = ""
 		labels = ""

@@ -58,9 +58,9 @@ def detect_objects(image_np, sess, detection_graph, fp):
 	print "num_detections:", num_detections, num_detections[0], "\n" """
 
 	top_n = 3
-	threshold = 0.1
+	threshold = 0.5
 	for index, value in enumerate(classes[0]):
-		if index >= min(top_n, num_detections[0]):
+		if index >= num_detections[0]:
 			break
 		print "\t", (category_index.get(value)).get('name').encode('utf8'), scores[0, index]
 		fp.write('\t{} {}\n'.format((category_index.get(value)).get('name').encode('utf8'), scores[0, index]))
@@ -90,11 +90,7 @@ def detect_objects(image_np, sess, detection_graph, fp):
 		np.squeeze(scores),
 		category_index,
 		use_normalized_coordinates=True,
-		line_thickness=4,
-		agnostic_mode=False,
-		groundtruth_box_visualization_color='black',
-		skip_scores=False,
-		skip_labels=False,
+		line_thickness=8,
 		min_score_thresh=threshold)
 	return image_np
 
