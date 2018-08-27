@@ -1,3 +1,11 @@
+""" 
+Script for printing/getting subclass names of a given class from ImageNet Dataset
+	
+Input: [wnid] of class
+
+Output: text file containing class names
+"""
+
 import sys
 import os
 import subprocess
@@ -8,7 +16,7 @@ if len(sys.argv) < 2:
 
 HYPONYM_URL = "http://www.image-net.org/api/text/wordnet.structure.hyponym?wnid="
 WORDS_URL = "http://www.image-net.org/api/text/wordnet.synset.getwords?wnid="
-output_file = open("output.txt", 'w')
+output_file = open(sys.argv[1] + "_hyponym.txt", 'w')
 
 def return_words(wnid):
 	url = WORDS_URL + wnid
