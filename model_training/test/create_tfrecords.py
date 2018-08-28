@@ -6,10 +6,16 @@ from natsort import natsorted
 import tensorflow as tf
 from object_detection.utils import dataset_util
 
+import contextlib2
+from object_detection.dataset_tools import tf_record_creation_util
+
 ANNOTATION_DIR = "Annotation"
 IMAGES_DIR = "Images"
 RECORDS_DIR = "tfrecords"
 LABEL_PATH = "tools_label_map.pbtxt"
+
+num_shards = 10
+output_filebase = os.path.join(RECORDS_DIR, "tools_dataset.record")
 
 """flags = tf.app.flags
 flags.DEFINE_string('output_path', '', 'Path to output TFRecord')
@@ -66,53 +72,65 @@ def create_tf_example(wnid, image, id):
 
 
 def main(_):
-	if os.path.exists(LABEL_PATH):
-		os.remove(LABEL_PATH)
-	id = 1
+	with contextlib2.ExitStack() as tf_record_close_stack:
+		if not os.path.exists(os.path.dirname(output_filebase)):
+			try:
+				os.makedirs(os.path.dirname(output_filebase))
+			except OSError as exc:
+				if exc.errno != errno.EEXIST:
+					raise
+		output_tfrecords = tf_record_creation_util.open_sharded_output_tfrecords(tf_record_close_stack, output_filebase, num_shards)
 
-	for wnid in natsorted(os.listdir(IMAGES_DIR)):
-		# For each wnid, add a label
-		with open(LABEL_PATH, 'a') as pbtxt:
-			pbtxt.write("item {\n")
-			pbtxt.write("  name: \"" + wnid + "\"\n")
-			pbtxt.write("  id: " + str(id) + "\n")
-			pbtxt.write("  display_name: \"" + str(id) + "\"\n")
-			pbtxt.write("}\n")
+		if os.path.exists(LABEL_PATH):
+			os.remove(LABEL_PATH)
+		id = 1
+		index = 0
 
-		for image in natsorted(os.listdir(os.path.join(IMAGES_DIR, wnid))):
-			image_id = image.split(".")[0]
-			image_path = os.path.join(IMAGES_DIR, wnid, image)
-			image_xml = os.path.join(ANNOTATION_DIR, wnid, image_id + ".xml")
+		for wnid in natsorted(os.listdir(IMAGES_DIR)):
+			# For each wnid, add a label
+			with open(LABEL_PATH, 'a') as pbtxt:
+				pbtxt.write("item {\n")
+				pbtxt.write("  name: \"" + wnid + "\"\n")
+				pbtxt.write("  id: " + str(id) + "\n")
+				pbtxt.write("  display_name: \"" + str(id) + "\"\n")
+				pbtxt.write("}\n")
 
-			if os.path.isfile(image_xml):
-				# Create necessary directories and files for tfrecords 
-				tfrecords_path = os.path.join(RECORDS_DIR, wnid, image_id + ".tfrecords")
-				if not os.path.exists(os.path.dirname(tfrecords_path)):
-					try:
-						os.makedirs(os.path.dirname(tfrecords_path))
-					except OSError as exc:
-						if exc.errno != errno.EEXIST:
-							raise
-				open(tfrecords_path, 'a').close()
+			for image in natsorted(os.listdir(os.path.join(IMAGES_DIR, wnid))):
+				image_id = image.split(".")[0]
+				image_path = os.path.join(IMAGES_DIR, wnid, image)
+				image_xml = os.path.join(ANNOTATION_DIR, wnid, image_id + ".xml")
 
-				flags = tf.app.flags
-				flags.DEFINE_string('output_path', tfrecords_path, 'Path to output TFRecord')
-				FLAGS = flags.FLAGS
-				
-				writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
+				if os.path.isfile(image_xml):
+					# Create necessary directories and files for tfrecords 
+					tfrecords_path = os.path.join(RECORDS_DIR, wnid, image_id + ".tfrecords")
+					if not os.path.exists(os.path.dirname(tfrecords_path)):
+						try:
+							os.makedirs(os.path.dirname(tfrecords_path))
+						except OSError as exc:
+							if exc.errno != errno.EEXIST:
+								raise
+					open(tfrecords_path, 'a').close()
 
-				tf_example = create_tf_example(wnid, image, id)
-				writer.write(tf_example.SerializeToString())
+					flags = tf.app.flags
+					flags.DEFINE_string('output_path', tfrecords_path, 'Path to output TFRecord')
+					FLAGS = flags.FLAGS
+					
+					writer = tf.python_io.TFRecordWriter(FLAGS.output_path)
 
-				writer.close()
+					tf_example = create_tf_example(wnid, image, id)
+					
+					writer.write(tf_example.SerializeToString())
+					writer.close()
 
-				for name in list(FLAGS):
-					delattr(FLAGS, name)
-		
-		id += 1
+					output_shard_index = index % num_shards
+					output_tfrecords[output_shard_index].write(tf_example.SerializeToString())
 
-	exit()
+					for name in list(FLAGS):
+						delattr(FLAGS, name)
 
+					index += 1
+			
+			id += 1
 
 if __name__ == '__main__':
 	tf.app.run()
