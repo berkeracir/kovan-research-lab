@@ -20,12 +20,14 @@ CWD_PATH = "/".join(os.path.realpath(__file__).split('/')[:-1])
 
 #faster_rcnn_inception_resnet_v2_atrous_lowproposals_oid_2018_01_28
 #faster_rcnn_inception_resnet_v2_atrous_oid_2018_01_28
-MODEL_NAME = "faster_rcnn_inception_resnet_v2_atrous_oid_2018_01_28"
+#MODEL_NAME = "faster_rcnn_inception_resnet_v2_atrous_oid_2018_01_28"
+MODEL_NAME = "faster_rcnn_resnet50_coco_2018_01_28"
 PATH_TO_CKPT = os.path.join(CWD_PATH, "models", MODEL_NAME, "frozen_inference_graph.pb")
 #PATH_TO_CKPT = os.path.join(CWD_PATH, "models", MODEL_NAME, "saved_model", "saved_model.pb")
-PATH_TO_LABELS = os.path.join(CWD_PATH, "data", "oid_bbox_trainable_label_map.pbtxt")
+#PATH_TO_LABELS = os.path.join(CWD_PATH, "data", "oid_bbox_trainable_label_map.pbtxt")
+PATH_TO_LABELS = os.path.join(CWD_PATH, "data", "tools_dataset_label_map.pbtxt")
 
-NUM_CLASSES = 546
+NUM_CLASSES = 64
 
 # Loading label map
 label_map = label_map_util.load_labelmap(PATH_TO_LABELS)
@@ -57,14 +59,14 @@ def detect_objects(image_np, sess, detection_graph, fp):
 	print "classes:", classes
 	print "num_detections:", num_detections, num_detections[0], "\n" """
 
-	top_n = 3
+	#top_n = 3
 	threshold = 0.5
-	for index, value in enumerate(classes[0]):
-		if index >= num_detections[0]:
-			break
-		print "\t", (category_index.get(value)).get('name').encode('utf8'), scores[0, index]
-		fp.write('\t{} {}\n'.format((category_index.get(value)).get('name').encode('utf8'), scores[0, index]))
-	print "\n"
+	#for index, value in enumerate(classes[0]):
+	#	if index >= num_detections[0]:
+	#		break
+	#	print "\t", (category_index.get(value)).get('name').encode('utf8'), scores[0, index]
+	#	fp.write('\t{} {}\n'.format((category_index.get(value)).get('name').encode('utf8'), scores[0, index]))
+	#print "\n"
 	# TODO: implement better printing method
 
 	"""
